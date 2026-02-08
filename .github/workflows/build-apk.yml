@@ -1,0 +1,38 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 安装依赖
+        run: npm install
+
+      - name: 设置 Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 构建 APK
+        run: eas build --platform android --profile preview --non-interactive --no-wait
+
+      - name: 等待构建完成
+        run: |
+          echo "构建已提交到 EAS Build"
+          echo "请访问 https://expo.dev 查看构建进度"
+          echo "构建完成后，APK 将在 Expo 网站上可供下载"
